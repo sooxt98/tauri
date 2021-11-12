@@ -27,9 +27,10 @@ use tauri_runtime::window::MenuEvent;
 use tauri_runtime::{SystemTray, SystemTrayEvent};
 #[cfg(windows)]
 use webview2_com::{
-  FocusChangedEventHandler,
-  Windows::Win32::{Foundation::HWND, System::WinRT::EventRegistrationToken},
+  FocusChangedEventHandler, Windows::Win32::System::WinRT::EventRegistrationToken,
 };
+#[cfg(windows)]
+use windows::Win32::Foundation::HWND;
 #[cfg(all(feature = "system-tray", target_os = "macos"))]
 use wry::application::platform::macos::{SystemTrayBuilderExtMacOS, SystemTrayExtMacOS};
 #[cfg(target_os = "linux")]
@@ -89,7 +90,6 @@ use std::{
     hash_map::Entry::{Occupied, Vacant},
     HashMap,
   },
-  convert::TryFrom,
   fmt,
   fs::read,
   ops::Deref,
@@ -178,6 +178,7 @@ struct DispatcherMainThreadContext {
 }
 
 // the main thread context is only used on the main thread
+#[allow(clippy::non_send_fields_in_send_ty)]
 unsafe impl Send for DispatcherMainThreadContext {}
 
 impl fmt::Debug for Context {
@@ -534,7 +535,7 @@ impl TryFrom<Icon> for WryIcon {
 struct WindowEventWrapper(Option<WindowEvent>);
 
 impl WindowEventWrapper {
-  fn parse(webview: &WindowHandle, event: &WryWindowEvent) -> Self {
+  fn parse(webview: &WindowHandle, event: &WryWindowEvent<'_>) -> Self {
     match event {
       // resized event from tao doesn't include a reliable size on macOS
       // because wry replaces the NSView
@@ -890,11 +891,13 @@ impl From<FileDropEventWrapper> for FileDropEvent {
 #[cfg(target_os = "macos")]
 pub struct NSWindow(*mut std::ffi::c_void);
 #[cfg(target_os = "macos")]
+#[allow(clippy::non_send_fields_in_send_ty)]
 unsafe impl Send for NSWindow {}
 
 #[cfg(windows)]
 pub struct Hwnd(HWND);
 #[cfg(windows)]
+#[allow(clippy::non_send_fields_in_send_ty)]
 unsafe impl Send for Hwnd {}
 
 #[cfg(any(
@@ -912,6 +915,7 @@ pub struct GtkWindow(gtk::ApplicationWindow);
   target_os = "netbsd",
   target_os = "openbsd"
 ))]
+#[allow(clippy::non_send_fields_in_send_ty)]
 unsafe impl Send for GtkWindow {}
 
 #[derive(Debug, Clone)]
@@ -1673,7 +1677,7 @@ impl Runtime for Wry {
           let proxy = self.event_loop.create_proxy();
           let mut token = EventRegistrationToken::default();
           unsafe {
-            controller.add_GotFocus(
+            controller.GotFocus(
               FocusChangedEventHandler::create(Box::new(move |_, _| {
                 let _ = proxy.send_event(Message::Webview(
                   id,
@@ -1687,7 +1691,7 @@ impl Runtime for Wry {
           .unwrap();
           let proxy = self.event_loop.create_proxy();
           unsafe {
-            controller.add_LostFocus(
+            controller.LostFocus(
               FocusChangedEventHandler::create(Box::new(move |_, _| {
                 let _ = proxy.send_event(Message::Webview(
                   id,
@@ -1815,6 +1819,7 @@ impl Runtime for Wry {
     self
       .event_loop
       .run_return(|event, event_loop, control_flow| {
+        *control_flow = ControlFlow::Wait;
         if let Event::MainEventsCleared = &event {
           *control_flow = ControlFlow::Exit;
         }
@@ -2213,7 +2218,7 @@ fn handle_user_message(
 }
 
 fn handle_event_loop(
-  event: Event<Message>,
+  event: Event<'_, Message>,
   event_loop: &EventLoopWindowTarget<Message>,
   control_flow: &mut ControlFlow,
   context: EventLoopIterationContext<'_>,
