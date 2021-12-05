@@ -103,6 +103,9 @@ pub trait WindowBuilder: WindowBuilderBase {
   /// Whether the window is resizable or not.
   fn resizable(self, resizable: bool) -> Self;
 
+  /// Whether the window has shadow or not.
+  fn shadow(self, shadow: bool) -> Self;
+
   /// The title of the window in the title bar.
   fn title<S: Into<String>>(self, title: S) -> Self;
 

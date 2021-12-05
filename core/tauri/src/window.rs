@@ -421,6 +421,18 @@ impl<R: Runtime> Window<R> {
     self.window.dispatcher.is_resizable().map_err(Into::into)
   }
 
+  /// Gets the window’s current shadow state.
+  ///
+  /// # Panics
+  ///
+  /// - Panics if the event loop is not running yet, usually when called on the [`setup`](crate::Builder#method.setup) closure.
+  /// - Panics when called on the main thread, usually on the [`run`](crate::App#method.run) closure.
+  ///
+  /// You can spawn a task to use the API using [`crate::async_runtime::spawn`] or [`std::thread::spawn`] to prevent the panic.
+  pub fn is_shadowed(&self) -> crate::Result<bool> {
+    self.window.dispatcher.is_shadowed().map_err(Into::into)
+  }
+
   /// Gets the window's current vibility state.
   ///
   /// # Panics

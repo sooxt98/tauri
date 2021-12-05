@@ -440,6 +440,9 @@ pub trait Dispatch: Debug + Clone + Send + Sized + 'static {
   /// Gets the window’s current decoration state.
   fn is_decorated(&self) -> crate::Result<bool>;
 
+  /// Gets the window’s current shadow state.
+  fn is_shadowed(&self) -> crate::Result<bool>;
+
   /// Gets the window’s current resizable state.
   fn is_resizable(&self) -> crate::Result<bool>;
 

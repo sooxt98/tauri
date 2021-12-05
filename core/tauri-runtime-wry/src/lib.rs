@@ -663,6 +663,7 @@ impl WindowBuilder for WindowBuilderWrapper {
       .inner_size(config.width, config.height)
       .visible(config.visible)
       .resizable(config.resizable)
+      .shadow(config.shadow)
       .decorations(config.decorations)
       .maximized(config.maximized)
       .fullscreen(config.fullscreen)
@@ -725,6 +726,11 @@ impl WindowBuilder for WindowBuilderWrapper {
 
   fn resizable(mut self, resizable: bool) -> Self {
     self.inner = self.inner.with_resizable(resizable);
+    self
+  }
+
+  fn shadow(mut self, shadow: bool) -> Self {
+    self.inner = self.inner.with_shadow(shadow);
     self
   }
 
@@ -1087,6 +1093,11 @@ impl Dispatch for WryDispatcher {
   /// Gets the window’s current resizable state.
   fn is_resizable(&self) -> Result<bool> {
     Ok(dispatcher_getter!(self, WindowMessage::IsResizable))
+  }
+
+  /// Gets the window’s current shadow state.
+  fn is_shadowed(&self) -> Result<bool> {
+    Ok(dispatcher_getter!(self, WindowMessage::IsShadowed))
   }
 
   fn is_visible(&self) -> Result<bool> {
@@ -2022,6 +2033,7 @@ fn handle_event_loop(
             WindowMessage::IsMaximized(tx) => tx.send(window.is_maximized()).unwrap(),
             WindowMessage::IsDecorated(tx) => tx.send(window.is_decorated()).unwrap(),
             WindowMessage::IsResizable(tx) => tx.send(window.is_resizable()).unwrap(),
+            WindowMessage::IsShadowed(tx) => tx.send(window.is_shadowed()).unwrap(),
             WindowMessage::IsVisible(tx) => tx.send(window.is_visible()).unwrap(),
             WindowMessage::IsMenuVisible(tx) => tx.send(window.is_menu_visible()).unwrap(),
             WindowMessage::CurrentMonitor(tx) => tx.send(window.current_monitor()).unwrap(),

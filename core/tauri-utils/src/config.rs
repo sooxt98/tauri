@@ -72,6 +72,9 @@ pub struct WindowConfig {
   /// Whether the window is resizable or not.
   #[serde(default = "default_resizable")]
   pub resizable: bool,
+  /// Whether the window is has_shadow or not.
+  #[serde(default = "default_shadow")]
+  pub shadow: bool,
   /// The window title.
   #[serde(default = "default_title")]
   pub title: String,
@@ -117,6 +120,10 @@ fn default_resizable() -> bool {
   true
 }
 
+fn default_shadow() -> bool {
+  true
+}
+
 fn default_visible() -> bool {
   true
 }
@@ -149,6 +156,7 @@ impl Default for WindowConfig {
       max_width: None,
       max_height: None,
       resizable: default_resizable(),
+      shadow: default_shadow(),
       title: default_title(),
       fullscreen: false,
       focus: false,
@@ -688,6 +696,7 @@ mod build {
       let max_width = opt_lit(self.max_width.as_ref());
       let max_height = opt_lit(self.max_height.as_ref());
       let resizable = self.resizable;
+      let shadow = self.shadow;
       let title = str_lit(&self.title);
       let fullscreen = self.fullscreen;
       let focus = self.focus;
@@ -713,6 +722,7 @@ mod build {
         min_height,
         max_width,
         max_height,
+        shadow,
         resizable,
         title,
         fullscreen,
@@ -980,6 +990,7 @@ mod test {
         min_height: None,
         max_width: None,
         max_height: None,
+        shadow: true,
         resizable: true,
         title: String::from("Tauri App"),
         fullscreen: false,
