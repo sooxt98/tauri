@@ -885,6 +885,7 @@ pub enum WindowMessage {
   AvailableMonitors(Sender<Vec<MonitorHandle>>),
   #[cfg(target_os = "macos")]
   NSWindow(Sender<NSWindow>),
+  SetHasShadow(bool),
   #[cfg(windows)]
   Hwnd(Sender<Hwnd>),
   #[cfg(any(
