@@ -512,6 +512,14 @@ impl<R: Runtime> Window<R> {
   pub fn ns_window(&self) -> crate::Result<*mut std::ffi::c_void> {
     self.window.dispatcher.ns_window().map_err(Into::into)
   }
+
+  pub fn set_has_shadow(&self, shadow: bool) -> crate::Result<()> {
+    self
+      .window
+      .dispatcher
+      .set_has_shadow(shadow)
+      .map_err(Into::into)
+  }
   /// Returns the native handle that is used by this window.
   ///
   /// # Panics

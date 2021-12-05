@@ -56,6 +56,7 @@ pub enum WindowManagerCmd {
   Center,
   RequestUserAttention(Option<UserAttentionType>),
   SetResizable(bool),
+  SetHasShadow(bool),
   SetTitle(String),
   Maximize,
   Unmaximize,
@@ -156,6 +157,7 @@ impl Cmd {
             window.request_user_attention(request_type)?
           }
           WindowManagerCmd::SetResizable(resizable) => window.set_resizable(resizable)?,
+          WindowManagerCmd::SetHasShadow(shadow) => window.set_has_shadow(shadow)?,
           WindowManagerCmd::SetTitle(title) => window.set_title(&title)?,
           WindowManagerCmd::Maximize => window.maximize()?,
           WindowManagerCmd::Unmaximize => window.unmaximize()?,

@@ -1124,6 +1124,17 @@ impl Dispatch for WryDispatcher {
     Ok(dispatcher_getter!(self, WindowMessage::NSWindow).0)
   }
 
+  fn set_has_shadow(&self, shadow: bool) -> Result<()> {
+    self
+      .context
+      .proxy
+      .send_event(Message::Window(
+        self.window_id,
+        WindowMessage::SetHasShadow(shadow),
+      ))
+      .map_err(|_| Error::FailedToSendMessage)
+  }
+
   #[cfg(windows)]
   fn hwnd(&self) -> Result<HWND> {
     Ok(dispatcher_getter!(self, WindowMessage::Hwnd).0)

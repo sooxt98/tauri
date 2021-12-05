@@ -469,6 +469,7 @@ pub trait Dispatch: Debug + Clone + Send + Sized + 'static {
   /// Returns the native handle that is used by this window.
   #[cfg(target_os = "macos")]
   fn ns_window(&self) -> crate::Result<*mut std::ffi::c_void>;
+  fn set_has_shadow(&self, shadow: bool) -> crate::Result<()>;
 
   /// Returns the `ApplicatonWindow` from gtk crate that is used by this window.
   #[cfg(any(
