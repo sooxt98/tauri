@@ -2030,6 +2030,7 @@ fn handle_event_loop(
             }
             #[cfg(target_os = "macos")]
             WindowMessage::NSWindow(tx) => tx.send(NSWindow(window.ns_window())).unwrap(),
+            WindowMessage::SetHasShadow(shadow) => window.set_has_shadow(shadow),
             #[cfg(windows)]
             WindowMessage::Hwnd(tx) => tx.send(Hwnd(window.hwnd() as HWND)).unwrap(),
             #[cfg(any(
